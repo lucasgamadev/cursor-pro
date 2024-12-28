@@ -1,13 +1,23 @@
 #!/bin/bash
 
+# Solicita a senha do usuário para executar comandos com sudo
+sudo -v
+
 # Define o diretório do Cursor
 CURSOR_DIR="/usr/local/bin/cursor-pro"
 
-# Verifica se wmctrl está instalado
-if ! command -v wmctrl &> /dev/null; then
-    echo "📦 Instalando wmctrl..."
-    sudo apt-get update && sudo apt-get install -y wmctrl
-fi
+# Verifica e instala dependências necessárias
+check_and_install_dependency() {
+    if ! command -v $1 &> /dev/null; then
+        echo "📦 Instalando $2..."
+        sudo apt-get update && sudo apt-get install -y $2
+    fi
+}
+
+# Instala dependências necessárias
+check_and_install_dependency "wmctrl" "wmctrl"
+check_and_install_dependency "xdotool" "xdotool"
+check_and_install_dependency "xdpyinfo" "x11-utils"
 
 # Muda para o diretório do Cursor
 cd "$CURSOR_DIR" || {
