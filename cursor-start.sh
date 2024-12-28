@@ -13,11 +13,11 @@ cd "$CURSOR_DIR" || {
 echo "🔍 Verificando ambiente do Cursor..."
 
 # Encontra o arquivo AppImage do Cursor
-CURSOR_APPIMAGE=$(find "$CURSOR_DIR" -maxdepth 1 -name "Cursor-linux-x64.AppImage" -type f | head -n 1)
+CURSOR_APPIMAGE=$(find "$CURSOR_DIR" -maxdepth 1 -name "cursor*.AppImage" -type f | head -n 1)
 
 # Verifica se os arquivos existem
 if [ -z "$CURSOR_APPIMAGE" ]; then
-    echo "❌ Arquivo Cursor-linux-x64.AppImage não encontrado em $CURSOR_DIR!"
+    echo "❌ Nenhum arquivo cursor*.AppImage encontrado em $CURSOR_DIR!"
     echo "Por favor, execute o script de instalação novamente."
     read -p "Pressione Enter para fechar..."
     exit 1
