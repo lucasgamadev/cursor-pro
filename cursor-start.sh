@@ -1,24 +1,31 @@
 #!/bin/bash
 
-# Muda para o diretório do script
-cd "$(dirname "$(readlink -f "$0")")"
+# Define o diretório do Cursor
+CURSOR_DIR="/usr/local/bin/cursor-pro"
+
+# Muda para o diretório do Cursor
+cd "$CURSOR_DIR" || {
+    echo "❌ Erro: Não foi possível acessar o diretório $CURSOR_DIR"
+    read -p "Pressione Enter para fechar..."
+    exit 1
+}
 
 echo "🔍 Verificando ambiente do Cursor..."
 
 # Encontra o arquivo AppImage do Cursor
-CURSOR_APPIMAGE=$(find . -maxdepth 1 -name "cursor*.AppImage" -type f | head -n 1)
+CURSOR_APPIMAGE=$(find "$CURSOR_DIR" -maxdepth 1 -name "Cursor-linux-x64.AppImage" -type f | head -n 1)
 
 # Verifica se os arquivos existem
 if [ -z "$CURSOR_APPIMAGE" ]; then
-    echo "❌ Nenhum arquivo cursor*.AppImage encontrado no diretório atual!"
-    echo "Por favor, baixe o arquivo do site oficial do Cursor e coloque-o no mesmo diretório deste script."
+    echo "❌ Arquivo Cursor-linux-x64.AppImage não encontrado em $CURSOR_DIR!"
+    echo "Por favor, execute o script de instalação novamente."
     read -p "Pressione Enter para fechar..."
     exit 1
 fi
 
-if [ ! -f "./cursor-vip_linux_amd64" ]; then
-    echo "❌ Arquivo cursor-vip_linux_amd64 não encontrado no diretório atual!"
-    echo "Por favor, verifique se o arquivo está no diretório correto."
+if [ ! -f "$CURSOR_DIR/cursor-vip_linux_amd64" ]; then
+    echo "❌ Arquivo cursor-vip_linux_amd64 não encontrado em $CURSOR_DIR!"
+    echo "Por favor, execute o script de instalação novamente."
     read -p "Pressione Enter para fechar..."
     exit 1
 fi
@@ -35,11 +42,11 @@ sudo rm -rf /tmp/.mount_cursor* 2>/dev/null
 # Ajusta permissões
 echo "🔧 Ajustando permissões..."
 chmod +x "$CURSOR_APPIMAGE"
-chmod +x ./cursor-vip_linux_amd64
+chmod +x "$CURSOR_DIR/cursor-vip_linux_amd64"
 
 # Inicia o cursor-vip em um novo terminal
 echo "🚀 Iniciando cursor-vip..."
-gnome-terminal --title="Cursor VIP" -- bash -c "cd '$(pwd)' && ./cursor-vip_linux_amd64; exec bash"
+gnome-terminal --title="Cursor VIP" -- bash -c "cd '$CURSOR_DIR' && ./cursor-vip_linux_amd64; exec bash"
 
 # Aguarda 10 segundos
 echo "⏳ Aguardando 10 segundos..."
