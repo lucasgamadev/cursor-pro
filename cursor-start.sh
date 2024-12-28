@@ -3,6 +3,12 @@
 # Define o diretório do Cursor
 CURSOR_DIR="/usr/local/bin/cursor-pro"
 
+# Verifica se wmctrl está instalado
+if ! command -v wmctrl &> /dev/null; then
+    echo "📦 Instalando wmctrl..."
+    sudo apt-get update && sudo apt-get install -y wmctrl
+fi
+
 # Muda para o diretório do Cursor
 cd "$CURSOR_DIR" || {
     echo "❌ Erro: Não foi possível acessar o diretório $CURSOR_DIR"
@@ -47,6 +53,21 @@ chmod +x "$CURSOR_DIR/cursor-vip_linux_amd64"
 # Inicia o cursor-vip em um novo terminal
 echo "🚀 Iniciando cursor-vip..."
 gnome-terminal --title="Cursor VIP" -- bash -c "cd '$CURSOR_DIR' && ./cursor-vip_linux_amd64; exec bash"
+
+# Aguarda um momento para a janela aparecer
+sleep 2
+
+# Posiciona a janela do Cursor VIP na metade direita da tela
+SCREEN_WIDTH=$(xdpyinfo | grep dimensions | awk '{print $2}' | cut -d 'x' -f1)
+HALF_WIDTH=$((SCREEN_WIDTH / 2))
+SCREEN_HEIGHT=$(xdpyinfo | grep dimensions | awk '{print $2}' | cut -d 'x' -f2)
+
+# Move a janela do terminal Cursor VIP para a metade direita
+wmctrl -r "Cursor VIP" -e 0,$HALF_WIDTH,0,$HALF_WIDTH,$SCREEN_HEIGHT
+
+# Move o terminal atual para a metade esquerda
+CURRENT_WINDOW_ID=$(xdotool getactivewindow)
+wmctrl -i -r $CURRENT_WINDOW_ID -e 0,0,0,$HALF_WIDTH,$SCREEN_HEIGHT
 
 # Aguarda 10 segundos
 echo "⏳ Aguardando 10 segundos..."
