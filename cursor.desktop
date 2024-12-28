@@ -3,8 +3,8 @@ Version=1.0
 Type=Application
 Name=Cursor IDE
 Comment=Editor de código Cursor
-Exec=gnome-terminal --title="Cursor Launcher" -- bash -c 'cd /home/lucas/Documentos/DEV/cursor-start && ./cursor-start.sh; exec bash'
-Icon=/home/lucas/Documentos/DEV/cursor-start/cursor-icon.png
+Exec=gnome-terminal --title="Cursor Launcher" -- bash -c 'cd /usr/local/bin/cursor-pro && ./cursor-start.sh; exec bash'
+Icon=/usr/local/bin/cursor-pro/cursor-icon.png
 Terminal=false
 Categories=Development;IDE;
 StartupWMClass=Cursor 
