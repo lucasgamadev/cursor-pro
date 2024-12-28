@@ -62,22 +62,46 @@ chmod +x "$CURSOR_DIR/cursor-vip_linux_amd64"
 
 # Inicia o cursor-vip em um novo terminal
 echo "🚀 Iniciando cursor-vip..."
+CURRENT_WINDOW_ID=$(xdotool getactivewindow)
 gnome-terminal --title="Cursor VIP" -- bash -c "cd '$CURSOR_DIR' && ./cursor-vip_linux_amd64; exec bash"
 
-# Aguarda um momento para a janela aparecer
+# Função para posicionar janelas
+position_windows() {
+    # Obtém dimensões da tela
+    SCREEN_WIDTH=$(xdpyinfo | grep dimensions | awk '{print $2}' | cut -d 'x' -f1)
+    HALF_WIDTH=$((SCREEN_WIDTH / 2))
+    SCREEN_HEIGHT=$(xdpyinfo | grep dimensions | awk '{print $2}' | cut -d 'x' -f2)
+
+    # Tenta posicionar as janelas várias vezes
+    for i in {1..5}; do
+        echo "📐 Tentativa $i de posicionar as janelas..."
+        
+        # Move a janela do terminal Cursor VIP para a metade direita
+        if wmctrl -l | grep -q "Cursor VIP"; then
+            wmctrl -r "Cursor VIP" -e 0,$HALF_WIDTH,0,$HALF_WIDTH,$SCREEN_HEIGHT
+        fi
+
+        # Move o terminal original para a metade esquerda
+        if [ ! -z "$CURRENT_WINDOW_ID" ]; then
+            wmctrl -i -r $CURRENT_WINDOW_ID -e 0,0,0,$HALF_WIDTH,$SCREEN_HEIGHT
+        fi
+
+        # Verifica se as janelas foram posicionadas corretamente
+        if wmctrl -l | grep -q "Cursor VIP"; then
+            echo "✅ Janelas posicionadas com sucesso!"
+            return 0
+        fi
+        
+        sleep 1
+    done
+    
+    echo "⚠️ Não foi possível posicionar as janelas automaticamente"
+    return 1
+}
+
+# Aguarda um momento para a janela aparecer e tenta posicionar
 sleep 2
-
-# Posiciona a janela do Cursor VIP na metade direita da tela
-SCREEN_WIDTH=$(xdpyinfo | grep dimensions | awk '{print $2}' | cut -d 'x' -f1)
-HALF_WIDTH=$((SCREEN_WIDTH / 2))
-SCREEN_HEIGHT=$(xdpyinfo | grep dimensions | awk '{print $2}' | cut -d 'x' -f2)
-
-# Move a janela do terminal Cursor VIP para a metade direita
-wmctrl -r "Cursor VIP" -e 0,$HALF_WIDTH,0,$HALF_WIDTH,$SCREEN_HEIGHT
-
-# Move o terminal atual para a metade esquerda
-CURRENT_WINDOW_ID=$(xdotool getactivewindow)
-wmctrl -i -r $CURRENT_WINDOW_ID -e 0,0,0,$HALF_WIDTH,$SCREEN_HEIGHT
+position_windows
 
 # Aguarda 10 segundos
 echo "⏳ Aguardando 10 segundos..."
